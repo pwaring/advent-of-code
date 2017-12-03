@@ -52,5 +52,7 @@ int main(void)
 
   printf("Sum of repeated digits: %" PRIu16 "\n", digits_sum);
 
+  free(digits_str);
+
   return EXIT_SUCCESS;
 }
