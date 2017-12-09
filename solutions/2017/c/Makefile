@@ -7,5 +7,8 @@ CC=clang
 4b: 4b.c
 	$(CC) $(CFLAGS) -o $@ $< $(shell pkg-config --cflags --libs glib-2.0)
 
+5a: 5a.c
+	$(CC) $(CFLAGS) -o $@ $< $(shell pkg-config --cflags --libs glib-2.0)
+
 %: %.c
 	$(CC) $(CFLAGS) -o $@ $<
