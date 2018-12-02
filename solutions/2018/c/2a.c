@@ -4,11 +4,6 @@
 #include <string.h>
 #include <inttypes.h>
 
-#include <glib.h>
-
-#include "functions.h"
-#include "macros.h"
-
 int main(void)
 {
   uint16_t two_letter_count = 0;
