@@ -62,7 +62,7 @@ int main(void)
 
   if (!current_frequency_found)
   {
-    //fprintf(stderr, "No repeated frequencies found\n");
+    fprintf(stderr, "No repeated frequencies found\n");
     return EXIT_FAILURE;
   }
 
