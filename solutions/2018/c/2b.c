@@ -73,6 +73,13 @@ int main(void)
     }
   }
 
+  // Free memory in reverse order of allocation
+  free(next_box_id_str);
+  next_box_id_str = NULL;
+
+  free(current_box_id_str);
+  current_box_id_str = NULL;
+
   g_slist_free_full(box_id_list, destroy_box_id);
   box_id_list = NULL;
 
