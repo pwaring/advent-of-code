@@ -12,6 +12,8 @@ struct claim {
   uint16_t top_edge;
   uint16_t width;
   uint16_t height;
+  uint16_t fabric_width;
+  uint16_t fabric_height;
 };
 
 int main(void)
@@ -94,14 +96,71 @@ int main(void)
       c++;
     }
 
-    printf("#%" PRIu16 " @ %" PRIu16 ",%" PRIu16 ": %" PRIu16 "x%" PRIu16 "\n", current_claim->id, current_claim->left_edge, current_claim->top_edge, current_claim->width, current_claim->height);
+    current_claim->fabric_width = current_claim->left_edge + current_claim->width;
+    current_claim->fabric_height = current_claim->top_edge + current_claim->height;
 
     // Prepend elements as this is quicker and the order doesn't matter when
     // we are comparing elements
     claim_list = g_slist_prepend(claim_list, current_claim);
   }
 
+  // Find the smallest piece of fabric which can fit every claim. The width will
+  // be max(left_edge + width) and the height will be max(top_edge + height).
+  uint16_t fabric_width = 0;
+  uint16_t fabric_height = 0;
 
+  for (GSList *list_item = claim_list; list_item != NULL; list_item = list_item->next)
+  {
+    current_claim = (struct claim *) list_item->data;
+
+    if (current_claim->fabric_width > fabric_width)
+    {
+      fabric_width = current_claim->fabric_width;
+    }
+
+    if (current_claim->fabric_height > fabric_height)
+    {
+      fabric_height = current_claim->fabric_height;
+    }
+  }
+
+  // Now that we have the fabric width and height, we can build an array which
+  // maintains a count of the number of times a square inch is covered.
+  uint16_t **fabric = calloc(fabric_width, sizeof(uint16_t *));
+  for (uint16_t i = 0; i < fabric_height; i++)
+  {
+    fabric[i] = calloc(fabric_height, sizeof(uint16_t));
+  }
+
+  for (GSList *list_item = claim_list; list_item != NULL; list_item = list_item->next)
+  {
+    current_claim = (struct claim *) list_item->data;
+
+    for (uint16_t x = current_claim->left_edge; x < current_claim->fabric_width; x++)
+    {
+      for (uint16_t y = current_claim->top_edge; y < current_claim->fabric_height; y++)
+      {
+        fabric[x][y]++;
+      }
+    }
+  }
+
+  // Find all the inches (i.e. unique x,y co-ordinates in fabric) with two or
+  // more claims
+  uint32_t double_claimed_inches = 0;
+
+  for (uint16_t x = 0; x < fabric_width; x++)
+  {
+    for (uint16_t y = 0; y < fabric_width; y++)
+    {
+      if (fabric[x][y] >= 2)
+      {
+        double_claimed_inches++;
+      }
+    }
+  }
+
+  printf("Double claimed inches: %" PRIu32 "\n", double_claimed_inches);
 
   return EXIT_SUCCESS;
 }
