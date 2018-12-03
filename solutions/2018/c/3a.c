@@ -162,5 +162,41 @@ int main(void)
 
   printf("Double claimed inches: %" PRIu32 "\n", double_claimed_inches);
 
+  // Find the only claim which overlaps once (i.e. with itself). For this to be
+  // true, every single co-ordinate of the claim must have a fabric claim count
+  // of 1.
+  uint16_t claim_no_overlap_id = 0;
+
+  for (GSList *list_item = claim_list; list_item != NULL && claim_no_overlap_id == 0; list_item = list_item->next)
+  {
+    // Assume a claim does not overlap until we find an example where it does
+    bool claim_overlaps = false;
+    current_claim = (struct claim *) list_item->data;
+
+    for (uint16_t x = current_claim->left_edge; x < current_claim->fabric_width && !claim_overlaps; x++)
+    {
+      for (uint16_t y = current_claim->top_edge; y < current_claim->fabric_height && !claim_overlaps; y++)
+      {
+        if (fabric[x][y] > 1)
+        {
+          claim_overlaps = true;
+        }
+      }
+    }
+
+    if (!claim_overlaps)
+    {
+      claim_no_overlap_id = current_claim->id;
+    }
+  }
+
+  if (claim_no_overlap_id == 0)
+  {
+    fprintf(stderr, "A claim with no overlap could not be found\n");
+    return EXIT_FAILURE;
+  }
+
+  printf("Claim ID with no overlap: %" PRIu16 "\n", claim_no_overlap_id);
+
   return EXIT_SUCCESS;
 }
