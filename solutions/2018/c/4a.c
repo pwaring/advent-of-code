@@ -21,25 +21,10 @@ struct guard_event {
 struct guard {
   uint16_t id;
   uint32_t total_minutes_asleep;
+  uint8_t sleepiest_minute;
+  uint8_t highest_asleep_count;
   GSList *events;
 };
-
-#if 0
-static gint compare_guards(gconstpointer a, gconstpointer b)
-{
-  const struct guard *a_comp = (const struct guard *) a;
-  const struct guard *b_comp = (const struct guard *) b;
-
-  if (a_comp->id == b_comp->id)
-  {
-    return 0;
-  }
-  else
-  {
-    return 1;
-  }
-}
-#endif
 
 static gint compare_events(gconstpointer a, gconstpointer b)
 {
@@ -126,6 +111,8 @@ int main(void)
       new_guard = calloc(1, sizeof(struct guard *));
       new_guard->id = current_guard_id;
       new_guard->total_minutes_asleep = 0;
+      new_guard->sleepiest_minute = 0;
+      new_guard->highest_asleep_count = 0;
       new_guard->events = NULL;
       new_guard->events = g_slist_append(new_guard->events, current_event);
 
@@ -139,16 +126,34 @@ int main(void)
   // Run through all the guards and calculate their total minutes asleep, keeping
   // track of which one spends the most time asleep
   struct guard *guard_most_time_asleep = NULL;
+  struct guard *guard_most_single_minute_asleep = NULL;
   uint8_t current_asleep_minute = 0;
   uint8_t current_wake_minute = 0;
+  uint8_t *asleep_minutes = calloc(MINUTES_IN_HOUR, sizeof(uint8_t));
+  uint8_t sleepiest_minute = 0;
+  uint8_t highest_asleep_count = 0;
 
   for (GSList *guard_list_item = guard_list; guard_list_item != NULL; guard_list_item = guard_list_item->next)
   {
     current_guard = (struct guard *) guard_list_item->data;
 
+    // Reset asleep minutes for this guard
+    sleepiest_minute = 0;
+    highest_asleep_count = 0;
+
+    for (uint8_t i = 0; i < MINUTES_IN_HOUR; i++)
+    {
+      asleep_minutes[i] = 0;
+    }
+
     if (guard_most_time_asleep == NULL)
     {
       guard_most_time_asleep = current_guard;
+    }
+
+    if (guard_most_single_minute_asleep == NULL)
+    {
+      guard_most_single_minute_asleep = current_guard;
     }
 
     for (GSList *event_list_item = current_guard->events; event_list_item != NULL; event_list_item = event_list_item->next)
@@ -164,64 +169,52 @@ int main(void)
       {
         current_wake_minute = current_event->minute;
         current_guard->total_minutes_asleep += (current_wake_minute - current_asleep_minute);
+
+        for (uint8_t j = current_asleep_minute; j < current_wake_minute; j++)
+        {
+          asleep_minutes[j]++;
+        }
       }
     }
 
-    // Update the sleepiest guard
+    // Set minute this guard was asleep the most
+    for (uint8_t i = 0; i < MINUTES_IN_HOUR; i++)
+    {
+      printf("In minute %" PRIu8 ", guard was asleep %" PRIu8 " times\n", i, asleep_minutes[i]);
+      if (asleep_minutes[i] > highest_asleep_count)
+      {
+        sleepiest_minute = i;
+        highest_asleep_count = asleep_minutes[i];
+      }
+    }
+
+    current_guard->sleepiest_minute = sleepiest_minute;
+    current_guard->highest_asleep_count = highest_asleep_count;
+
+    // Update the guard who spent the most time asleep
     if (current_guard->total_minutes_asleep > guard_most_time_asleep->total_minutes_asleep)
     {
       guard_most_time_asleep = current_guard;
     }
-  }
 
-  printf("Guard who spent most time asleep has ID: %" PRIu16 "\n", guard_most_time_asleep->id);
-
-  // Make a record of how often the sleepiest guard is asleep each minute
-  uint8_t *asleep_minutes = calloc(MINUTES_IN_HOUR, sizeof(uint8_t));
-  for (uint8_t i = 0; i < MINUTES_IN_HOUR; i++)
-  {
-    asleep_minutes[i] = 0;
-  }
-
-  for (GSList *event_list_item = guard_most_time_asleep->events; event_list_item != NULL; event_list_item = event_list_item->next)
-  {
-    current_event = (struct guard_event *) event_list_item->data;
-    printf("Checking sleepiest guard event. ID: %" PRIu16 ", State: %" PRIu8 ", Minute: %" PRIu8 "\n", current_event->guard_id, current_event->state, current_event->minute);
-
-    if (current_event->state == EVENT_FALLS_ASLEEP)
+    // Update the guard with the highest individual minute asleep frequency
+    if (current_guard->highest_asleep_count > guard_most_single_minute_asleep->highest_asleep_count)
     {
-      current_asleep_minute = current_event->minute;
-    }
-    else if (current_event->state == EVENT_WAKES_UP)
-    {
-      current_wake_minute = current_event->minute;
-
-      for (uint8_t j = current_asleep_minute; j < current_wake_minute; j++)
-      {
-        asleep_minutes[j]++;
-      }
+      guard_most_single_minute_asleep = current_guard;
     }
   }
 
-  // Find which 'minute' this guard was asleep the most
-  uint8_t sleepiest_minute = 0;
-  uint8_t highest_asleep_count = 0;
+  printf("Guard who spent most total time asleep has ID: %" PRIu16 "\n", guard_most_time_asleep->id);
 
-  for (uint8_t i = 0; i < MINUTES_IN_HOUR; i++)
-  {
-    printf("In minute %" PRIu8 ", guard was asleep %" PRIu8 " times\n", i, asleep_minutes[i]);
-    if (asleep_minutes[i] > highest_asleep_count)
-    {
-      sleepiest_minute = i;
-      highest_asleep_count = asleep_minutes[i];
-    }
-  }
-
-  printf("Sleepiest minute: %" PRIu8 "\n", sleepiest_minute);
-
-  uint32_t strategy_one = guard_most_time_asleep->id * sleepiest_minute;
+  uint32_t strategy_one = guard_most_time_asleep->id * guard_most_time_asleep->sleepiest_minute;
 
   printf("Strategy one: %" PRIu32 "\n", strategy_one);
+
+  printf("Guard who spent most individual minute asleep has ID: %" PRIu16 "\n", guard_most_single_minute_asleep->id);
+
+  uint32_t strategy_two = guard_most_single_minute_asleep->id * guard_most_single_minute_asleep->sleepiest_minute;
+
+  printf("Strategy two: %" PRIu32 "\n", strategy_two);
 
   return EXIT_SUCCESS;
 }
