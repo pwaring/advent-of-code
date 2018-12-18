@@ -16,7 +16,7 @@ For C solutions, C99 is assumed as a minimum and solutions from 2018 day 4 onwar
 have been compiled with:
 
 ```
-clang -Wall -Wextra -Werror -Weverything -pedantic -Wno-padded -Wno-gnu-folding-constant -g -o ${EX_NUM} ${EX_NUM}.c $(shell pkg-config --cflags --libs glib-2.0)
+clang -Werror -Weverything -Wno-padded -Wno-gnu-folding-constant -g -o ${EX_NUM} ${EX_NUM}.c $(shell pkg-config --cflags --libs glib-2.0)
 ```
 
 `-Wno-padded` is used because padding a struct is a matter for the compiler. If
