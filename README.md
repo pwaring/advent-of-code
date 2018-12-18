@@ -8,6 +8,9 @@ these solutions run for a very short period of time - seconds in most cases -
 and the kernel will reclaim any memory allocated to a process when the process
 terminates anyway.
 
+As the input is 'known' there is minimal error checking, real programs would
+have significantly more validation and unit tests.
+
 For C solutions, C99 is assumed as a minimum and solutions from 2018 day 4 onwards
 have been compiled with:
 
