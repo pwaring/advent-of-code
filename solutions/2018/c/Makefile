@@ -1,4 +1,4 @@
-CFLAGS=-Werror -Weverything -Wno-padded -Wno-gnu-folding-constant
+CFLAGS=-Werror -Wall -Wextra -Wno-padded -Wno-gnu-folding-constant
 CC=clang
 
 %: %.c
