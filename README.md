@@ -1,7 +1,8 @@
 # Advent of Code
 
-Advent of Code solutions, primarily in C. I am solving these problems for fun
-and to (re)learn languages that I don't use commercially, but would like to.
+Advent of Code solutions, primarily in C (2017, 2018) and PHP (2019).
+I am solving these problems for fun and, with the exception of PHP, to (re)learn languages
+that I don't use commercially, but would like to.
 
 These are not necessarily the most efficient, elegant or robust solutions. For
 example, I have not always freed memory allocated on the heap, partly because
