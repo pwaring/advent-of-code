@@ -1,0 +1,5 @@
+{
+    "require": {
+        "algb12/graph-ds": "^1.0.9"
+    }
+}

@@ -1,0 +1,62 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "7f07dae8fe083397f282300076d2847c",
+    "packages": [
+        {
+            "name": "algb12/graph-ds",
+            "version": "1.0.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/algb12/GraphDS.git",
+                "reference": "be91927b9b88aa83a4c261b908afc9dd4837956a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/algb12/GraphDS/zipball/be91927b9b88aa83a4c261b908afc9dd4837956a",
+                "reference": "be91927b9b88aa83a4c261b908afc9dd4837956a",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-simplexml": "*",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "^0.4.4",
+                "php": ">=5.4",
+                "phpunit/phpunit": "7.0.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "GraphDS\\": "src",
+                    "Tests\\": "tests"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alex Gilburg",
+                    "email": "algb12.19@gmail.com"
+                }
+            ],
+            "description": "A fast implementation of the graph data-structure in PHP",
+            "time": "2019-03-31T03:03:30+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}
