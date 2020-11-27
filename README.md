@@ -1,6 +1,6 @@
 # Advent of Code
 
-Advent of Code solutions, primarily in C (2017, 2018) and PHP (2019).
+Advent of Code solutions, in C (2017, 2018), Python (2018), and PHP (2015, 2019).
 I am solving these problems for fun and, with the exception of PHP, to (re)learn languages
 that I don't use commercially, but would like to.
 
