@@ -9,8 +9,6 @@ import (
 )
 
 func main() {
-	const newFishDefaultTimer = 8
-
 	scanner := bufio.NewScanner(os.Stdin)
 	fish := [9]int{}
 	maxDay := 256
