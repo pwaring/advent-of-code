@@ -167,15 +167,9 @@ func main() {
 				// Check if file exists
 				// This is necessary because we may have seen this file already,
 				// for example if we have changed into a directory and run ls in its parent
-				fileExists := false
+				existingFile := getFileInDirectory(currentFile, fileName)
 
-				for c := range currentFile.Children {
-					if currentFile.Children[c].Name == fileName {
-						fileExists = true
-					}
-				}
-
-				if !fileExists {
+				if existingFile == nil {
 					// Add file to this level of the tree
 					filePath := currentFile.Path + "/" + fileName
 
